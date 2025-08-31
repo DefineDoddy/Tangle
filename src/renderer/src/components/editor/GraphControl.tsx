@@ -1,0 +1,71 @@
+import { useReactFlow } from "@xyflow/react";
+import React, { useRef, useEffect, memo } from "react";
+
+function GraphControl(): React.JSX.Element {
+  const flow = useReactFlow();
+
+  const isDragging = useRef(false);
+  const lastPosition = useRef<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    function isInsideFlowPane(target: EventTarget | null): boolean {
+      if (!(target instanceof Element)) return false;
+      return Boolean(target.closest(".react-flow__pane"));
+    }
+
+    function onMouseDown(evt: MouseEvent): void {
+      if (evt.button !== 1) return;
+      if (!isInsideFlowPane(evt.target)) return;
+
+      evt.preventDefault();
+      document.documentElement.style.setProperty("--cursor", "grabbing");
+
+      isDragging.current = true;
+      lastPosition.current = { x: evt.clientX, y: evt.clientY };
+    }
+
+    function onMouseMove(evt: MouseEvent): void {
+      if (!isDragging.current) return;
+      if (!lastPosition.current) return;
+
+      const dx = evt.clientX - lastPosition.current.x;
+      const dy = evt.clientY - lastPosition.current.y;
+      lastPosition.current = { x: evt.clientX, y: evt.clientY };
+
+      try {
+        const viewport = flow.getViewport() || { x: 0, y: 0, zoom: 1 };
+
+        flow.setViewport({
+          x: viewport.x + dx,
+          y: viewport.y + dy,
+          zoom: viewport.zoom
+        });
+      } catch {
+        // flow may not be available during early mount
+      }
+    }
+
+    function onMouseUp(evt: MouseEvent): void {
+      if (evt.button !== 1) return;
+      if (!isDragging.current) return;
+
+      document.documentElement.style.setProperty("--cursor", "default");
+      isDragging.current = false;
+      lastPosition.current = null;
+    }
+
+    window.addEventListener("mousedown", onMouseDown, true);
+    window.addEventListener("mousemove", onMouseMove, true);
+    window.addEventListener("mouseup", onMouseUp, true);
+
+    return () => {
+      window.removeEventListener("mousedown", onMouseDown, true);
+      window.removeEventListener("mousemove", onMouseMove, true);
+      window.removeEventListener("mouseup", onMouseUp, true);
+    };
+  }, [flow]);
+
+  return <div aria-hidden="true" style={{ display: "none" }}></div>;
+}
+
+export default memo(GraphControl);

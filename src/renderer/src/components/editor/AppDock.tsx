@@ -1,19 +1,13 @@
 import { Dock, DockIcon, DockItem, DockLabel } from "@/components/ui/dock";
 import { cn } from "@/lib/utils";
-import { ComponentIcon, MousePointer2Icon } from "lucide-react";
+import { ComponentIcon, MousePointer2Icon, PlayIcon, SearchIcon } from "lucide-react";
 import React from "react";
 
-const data = [
-  {
-    title: "Mode",
-    icon: <MousePointer2Icon />,
-    href: "#"
-  },
-  {
-    title: "Components",
-    icon: <ComponentIcon />,
-    href: "#"
-  }
+const data: { title: string; icon: React.ReactElement; href: string }[] = [
+  { title: "Mode", icon: <MousePointer2Icon />, href: "#" },
+  { title: "Components", icon: <ComponentIcon />, href: "#" },
+  { title: "Search", icon: <SearchIcon />, href: "#" },
+  { title: "Preview", icon: <PlayIcon />, href: "#" }
 ];
 
 export default function AppDock(): React.JSX.Element {
