@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { nodeDefs } from "./node-types";
 
 function DialogueNode(): React.JSX.Element {
   const [placeholder] = useState(() => {
@@ -30,7 +31,11 @@ function DialogueNode(): React.JSX.Element {
 
       <div className="p-5 rounded-lg bg-card border shadow-sm flex flex-col gap-5">
         <div className="flex items-center justify-between gap-4">
-          <span className="text-foreground font-semibold text-lg">Dialogue</span>
+          <div className="flex gap-3 items-center">
+            <nodeDefs.dialogue.icon />
+            <span className="text-foreground font-semibold text-lg">Dialogue</span>
+          </div>
+
           <Select value="evelyn">
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a character" />

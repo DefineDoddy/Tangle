@@ -1,11 +1,17 @@
+import { useDragAndDrop } from "@/hooks/useDragAndDrop";
 import { useReactFlow } from "@xyflow/react";
 import React, { useRef, useEffect, memo } from "react";
+import { useGraphState } from "./state/graph-state";
 
 function GraphControl(): React.JSX.Element {
   const flow = useReactFlow();
 
   const isDragging = useRef(false);
   const lastPosition = useRef<{ x: number; y: number } | null>(null);
+
+  const { screenToFlowPosition } = useReactFlow();
+  const state = useGraphState();
+  const dragAndDrop = useDragAndDrop();
 
   useEffect(() => {
     function isInsideFlowPane(target: EventTarget | null): boolean {
@@ -46,12 +52,24 @@ function GraphControl(): React.JSX.Element {
     }
 
     function onMouseUp(evt: MouseEvent): void {
-      if (evt.button !== 1) return;
-      if (!isDragging.current) return;
+      if (evt.button === 0) {
+        if (dragAndDrop.type && isInsideFlowPane(evt.target)) {
+          const position = screenToFlowPosition({
+            x: evt.clientX,
+            y: evt.clientY
+          });
 
-      document.documentElement.style.setProperty("--cursor", "default");
-      isDragging.current = false;
-      lastPosition.current = null;
+          state.addNodeFromType(dragAndDrop.type, position);
+        }
+
+        dragAndDrop.setType(null);
+      } else if (evt.button === 1) {
+        if (!isDragging.current) return;
+
+        document.documentElement.style.setProperty("--cursor", "default");
+        isDragging.current = false;
+        lastPosition.current = null;
+      }
     }
 
     window.addEventListener("mousedown", onMouseDown, true);
@@ -63,7 +81,7 @@ function GraphControl(): React.JSX.Element {
       window.removeEventListener("mousemove", onMouseMove, true);
       window.removeEventListener("mouseup", onMouseUp, true);
     };
-  }, [flow]);
+  }, [flow, screenToFlowPosition, state, dragAndDrop]);
 
   return <div aria-hidden="true" style={{ display: "none" }}></div>;
 }
