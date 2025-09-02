@@ -1,7 +1,7 @@
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
 import { useReactFlow } from "@xyflow/react";
 import React, { useRef, useEffect, memo } from "react";
-import { useGraphState } from "./state/graph-state";
+import { useAppState } from "./state/app-provider";
 
 function GraphControl(): React.JSX.Element {
   const flow = useReactFlow();
@@ -10,7 +10,7 @@ function GraphControl(): React.JSX.Element {
   const lastPosition = useRef<{ x: number; y: number } | null>(null);
 
   const { screenToFlowPosition } = useReactFlow();
-  const state = useGraphState();
+  const state = useAppState();
   const dragAndDrop = useDragAndDrop();
 
   useEffect(() => {
@@ -69,6 +69,9 @@ function GraphControl(): React.JSX.Element {
         document.documentElement.style.setProperty("--cursor", "default");
         isDragging.current = false;
         lastPosition.current = null;
+
+        console.log("Saved viewport", flow.getViewport());
+        state.setViewport(flow.getViewport());
       }
     }
 

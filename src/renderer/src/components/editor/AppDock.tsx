@@ -7,9 +7,10 @@ import {
   SearchIcon,
   ArrowLeftIcon
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { nodeDefs } from "./nodes/node-types";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
+import { useAppState } from "./state/app-provider";
 
 type DockItem = BaseDockItem | ComponentDockItem;
 type ComponentDockItem = BaseDockItem & { type: string };
@@ -22,7 +23,7 @@ type BaseDockItem = {
 };
 
 export default function AppDock(): React.JSX.Element {
-  const [view, setView] = useState<"root" | "components">("root");
+  const { dockView, setDockView, addNodeFromType } = useAppState();
 
   const rootItems: DockItem[] = [
     { id: "mode", title: "Mode", icon: <MousePointer2Icon /> },
@@ -30,7 +31,7 @@ export default function AppDock(): React.JSX.Element {
       id: "components",
       title: "Components",
       icon: <ComponentIcon />,
-      onClick: () => setView("components")
+      onClick: () => setDockView("components")
     },
     { id: "search", title: "Search", icon: <SearchIcon /> },
     { id: "preview", title: "Preview", icon: <PlayIcon /> }
@@ -41,22 +42,45 @@ export default function AppDock(): React.JSX.Element {
       id: "back",
       title: "Back",
       icon: <ArrowLeftIcon />,
-      onClick: () => setView("root")
+      onClick: () => setDockView("root")
     },
-    ...Object.entries(nodeDefs)
+    ...(Object.entries(nodeDefs)
       .filter(([, node]) => node.creatable !== false)
       .map(([key, node]) => ({
         id: key,
         type: key,
         title: node.name,
         icon: <node.icon />,
-        draggable: true
-      }))
+        draggable: true,
+        onClick: () => {
+          addNodeFromType(key, { x: 0, y: 0 });
+        }
+      })) as ComponentDockItem[])
   ];
 
-  const items = view === "root" ? rootItems : componentItems;
+  const items = dockView === "root" ? rootItems : componentItems;
   const [dragging, setDragging] = useState<string | null>(null);
   const dragAndDrop = useDragAndDrop();
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent): void {
+      if (e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey) {
+        const num = parseInt(e.key, 10);
+
+        if (!isNaN(num) && num >= 1 && num <= items.length) {
+          const item = items[num - 1];
+
+          if (item && typeof item.onClick === "function") {
+            e.preventDefault();
+            item.onClick();
+          }
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [items]);
 
   return (
     <div className="absolute bottom-10 left-1/2 max-w-full -translate-x-1/2">

@@ -1,18 +1,18 @@
 import Graph from "./components/editor/Graph";
 import AppDock from "./components/editor/AppDock";
-import { GraphProvider } from "./components/editor/state/graph-provider";
+import { AppProvider } from "./components/editor/state/app-provider";
 import DragAndDropProvider from "./hooks/useDragAndDrop";
 import { ReactFlowProvider } from "@xyflow/react";
 
 function App(): React.JSX.Element {
   return (
     <ReactFlowProvider>
-      <GraphProvider>
+      <AppProvider>
         <DragAndDropProvider>
           <Graph />
           <AppDock />
         </DragAndDropProvider>
-      </GraphProvider>
+      </AppProvider>
     </ReactFlowProvider>
   );
 }

@@ -1,14 +1,14 @@
 import { ReactFlow, Background, Controls, SelectionMode, useReactFlow } from "@xyflow/react";
 import { nodeTypes } from "./nodes/node-types";
-import ConnectionLine from "./ConnectionLine";
+import ConnectionLine from "./edge/ConnectionLine";
 import GraphControl from "./GraphControl";
-import { useGraphState } from "./state/graph-state";
+import { useAppState } from "./state/app-provider";
 import { useDragAndDrop } from "@/hooks/useDragAndDrop";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 export default function Graph(): React.JSX.Element {
-  const state = useGraphState();
-  const { screenToFlowPosition } = useReactFlow();
+  const state = useAppState();
+  const { screenToFlowPosition, setViewport } = useReactFlow();
   const dragAndDrop = useDragAndDrop();
 
   const onDrop = useCallback(
@@ -43,6 +43,11 @@ export default function Graph(): React.JSX.Element {
     evt.dataTransfer.effectAllowed = "move";
   }
 
+  useEffect(() => {
+    setViewport(state.viewport);
+    console.log("Set viewport to", state.viewport);
+  }, [state.isLoaded]);
+
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <ReactFlow
@@ -60,7 +65,6 @@ export default function Graph(): React.JSX.Element {
         isValidConnection={(connection) => {
           return connection.source !== connection.target;
         }}
-        fitView
         minZoom={0.2}
         maxZoom={1}
         panOnDrag={false}

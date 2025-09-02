@@ -37,7 +37,11 @@ button {
   background-clip: content-box;
   border: none;
 
-  @apply spring-bounce-40 spring-duration-200;
+  /* @apply spring-bounce-40 spring-duration-200; */
+
+  &.source {
+    border-radius: 25%;
+  }
 
   &:hover {
     width: 20px;
