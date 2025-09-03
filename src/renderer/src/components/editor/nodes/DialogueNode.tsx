@@ -39,7 +39,7 @@ function DialogueNode(): React.JSX.Element {
   };
 
   return (
-    <div className="min-w-75 max-w-120">
+    <div className="min-w-75 max-w-100">
       <Handle type="source" position={Position.Left} className="node-connection-handle" />
       <Handle type="target" position={Position.Right} className="node-connection-handle" />
 

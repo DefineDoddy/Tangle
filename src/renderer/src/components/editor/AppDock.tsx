@@ -114,7 +114,7 @@ export default function AppDock(): React.JSX.Element {
               )}
             >
               {dragging !== item.id ? (
-                <DockLabel className="select-none">{item.title}</DockLabel>
+                <DockLabel className="select-none pointer-events-none">{item.title}</DockLabel>
               ) : (
                 <div></div>
               )}

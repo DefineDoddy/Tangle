@@ -1,11 +1,14 @@
 import {
   ListVideoIcon,
+  MegaphoneIcon,
   MessageSquareMoreIcon,
   NotepadTextIcon,
   PlayIcon,
   RouteIcon,
   ScaleIcon,
-  ShellIcon
+  ShellIcon,
+  SigmaIcon,
+  SplitIcon
 } from "lucide-react";
 import ChoiceNode from "./ChoiceNode";
 import DialogueNode from "./DialogueNode";
@@ -15,6 +18,7 @@ import RouteNode from "./RouteNode";
 import NoteNode from "./NoteNode";
 import LabelNode from "./LabelNode";
 import PortalNode from "./PortalNode";
+import BranchNode from "./BranchNode";
 
 type NodeDefinition = {
   name: string;
@@ -40,6 +44,16 @@ export const nodeDefs: Record<string, NodeDefinition> = {
     component: ChoiceNode,
     icon: ScaleIcon
   },
+  branch: {
+    name: "Branch",
+    component: BranchNode,
+    icon: SplitIcon
+  },
+  variable: {
+    name: "Variable",
+    component: BranchNode,
+    icon: SigmaIcon
+  },
   label: {
     name: "Label",
     component: LabelNode,
@@ -49,6 +63,11 @@ export const nodeDefs: Record<string, NodeDefinition> = {
     name: "Portal",
     component: PortalNode,
     icon: ShellIcon
+  },
+  event: {
+    name: "Event",
+    component: BranchNode,
+    icon: MegaphoneIcon
   },
   route: {
     name: "Route",
@@ -66,6 +85,7 @@ export const nodeTypes = {
   start: StartNode,
   dialogue: DialogueNode,
   choice: ChoiceNode,
+  branch: BranchNode,
   label: LabelNode,
   portal: PortalNode,
   route: RouteNode,
